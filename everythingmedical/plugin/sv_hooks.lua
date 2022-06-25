@@ -74,9 +74,7 @@ function PLUGIN.GetAllChildBones(ent, boneID, bones)
 
 	for k = 0, bonecount - 1 do
 		if ( ent:GetBoneParent( k ) != boneID ) then continue end;
-		print("new bone", k);
 		table.insert( bones, k );
-		PrintTable(bones);
 		PLUGIN.GetAllChildBones(ent, k, bones);
 	end;
 
@@ -95,7 +93,7 @@ function PLUGIN:PlayerCharacterCreated(player, character)
 		local newInjury = {};
 		newInjury.type = injuryTable.name;
 		newInjury.delay = CurTime() + injuryTable.delay;
-		
+
 
 		if injuryTable.defaultData then
 			for i,v in pairs(injuryTable.defaultData) do
@@ -116,7 +114,7 @@ function PLUGIN:PlayerCharacterCreated(player, character)
 		local newInjury = {};
 		newInjury.type = injuryTable.name;
 		newInjury.delay = CurTime() + injuryTable.delay;
-		
+
 
 		if injuryTable.defaultData then
 			for i,v in pairs(injuryTable.defaultData) do
@@ -137,7 +135,7 @@ function PLUGIN:PlayerCharacterCreated(player, character)
 		local newInjury = {};
 		newInjury.type = injuryTable.name;
 		newInjury.delay = CurTime() + injuryTable.delay;
-		
+
 
 		if injuryTable.defaultData then
 			for i,v in pairs(injuryTable.defaultData) do
@@ -162,9 +160,9 @@ function PLUGIN:PlayerSetSharedVars(player, curTime)
 	local shVars, shTables = Clockwork.kernel:GetSharedVars();
 
 	Clockwork.datastream:Start(player, "UpdateInjuries", {player:GetCharacterData("injuries"), player:GetCharacterData("Diseases")});
-	
+
 	//print(player:GetCharacterData("injuries"))
-	
+
 	/*
 	if (player:Alive() and !player:IsRagdolled() and player:GetVelocity():Length() > 0) then
 		if (player:GetCharacterData("hydration") == 100) then
@@ -269,7 +267,7 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 			end;
 		end;
 	end;
-	
+
 	if ( player:Alive() ) then
 		//blood
 		if (blood <= 0 and !player.dyingBlood) then
@@ -350,46 +348,21 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 			Clockwork.chatBox:Add(player, nil, "treat", "** As your pain lessens, you're once again able to move freely.");
 		end;
 
-		local ragdoll = player:GetRagdollEntity();
-
-		if (IsValid(ragdoll) and !player:HasInjury("unconsciousness") and pain >= 50 and CurTime() >= player.ragdollJitter) then
-			//ragdoll:Remove();
-			local boneJitters = math.random(2, 10);
-			local nextJitter = math.Rand(.02, .5);
-
-			player.ragdollJitter = CurTime() + nextJitter;
-
-			for i=1, boneJitters do
-				local bonePhysID = ragdoll:TranslateBoneToPhysBone(math.random(1, ragdoll:GetBoneCount()));
-
-				if (bonePhysID != -1) then
-					local physObj = ragdoll:GetPhysicsObjectNum(bonePhysID);
-
-					local jitAmountX = math.Clamp(math.random(-20, 20) * physObj:GetMass(), -280, 280);
-					local jitAmountY = math.Clamp(math.random(-20, 20) * physObj:GetMass(), -280, 280);
-					local jitAmountZ = math.Clamp(math.random(-30, 30) * physObj:GetMass(), -400, 400);
-
-					//physObj:AddVelocity( Vector(jitAmount, jitAmount, jitAmount) );
-					physObj:AddAngleVelocity( Vector(jitAmountX, jitAmountY, jitAmountZ) );
-				end;
-			end;
-		end;
-
 		local bPlayerBreathSnd = false;
 
 		if (!player:HasInjury("unconsciousness") and (respiration <= 80 and respiration > 50 and Clockwork.event:CanRun("sounds", "breathing") or (player:GetCharacterData("Stamina") and player:GetCharacterData("Stamina") <= 30))) then
 			bPlayerBreathSnd = true;
 		end;
-		
+
 		if (!player.nextRespirationSound or curTime >= player.nextRespirationSound) then
 			if (!Clockwork.player:IsNoClipping(player)) then
 				player.nextRespirationSound = curTime + 2;
-				
+
 				if (bPlayerBreathSnd) then
 					local volume = 20 + respiration;
 					local painRandom = math.random(1, 5);
 
-					
+
 					player:EmitSound("player/focus_gasp_0"..painRandom..".wav", 75);
 					//Clockwork.player:StartSound(player, "Respiration", "player/focus_gasp_0"..painRandom..".wav", volume / 100);
 				else
@@ -403,11 +376,11 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 		if (!player:HasInjury("unconsciousness") and !bPlayerBreathSnd and (pain >= 20 and pain < 80 and Clockwork.event:CanRun("sounds", "pain"))) then
 			bPlayerPainSnd = true;
 		end;
-		
+
 		if (!player.nextPainSound or curTime >= player.nextPainSound) then
 			if (!Clockwork.player:IsNoClipping(player)) then
 				player.nextPainSound = curTime + math.random(4, 7);
-				
+
 				if (bPlayerPainSnd) then
 					local painSound = "vo/npc/male01/moan01.wav";
 					local painRandom = math.random(1, 5);
@@ -429,7 +402,7 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 							if painRandom < 10 then
 								painRandom = "0"..painRandom
 							end;
-						
+
 							player:EmitSound("player/damage/pl_deathshout_"..painRandom..".wav", 90);
 						else
 							player:EmitSound("vo/npc/female01/pain0"..painRandom..".wav", 90);
@@ -468,6 +441,8 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 			player:SetHealth(50);
 		end;*/
 
+		// TODO: Move all of the modifiers to applying upon an injury reseting (and removing movement mods afterward injury is lost)
+
 		local medSpeedMod = 1;
 		local medWeightMod = 1;
 
@@ -492,19 +467,6 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 		infoTable.jumpPower = infoTable.jumpPower * medSpeedMod;
 
 		infoTable.inventoryWeight = infoTable.inventoryWeight * medWeightMod;
-
-		local clothes = player:GetClothesItem();
-
-		if (clothes) then
-			if (clothes.pocketSpace) then
-				infoTable.inventoryWeight = infoTable.inventoryWeight + clothes.pocketSpace;
-			end;
-
-			if (clothes.speedMod) then
-				infoTable.walkSpeed = infoTable.walkSpeed * clothes.speedMod;
-				infoTable.runSpeed = infoTable.runSpeed * clothes.speedMod;
-			end;
-		end;
 	end;
 end;
 
@@ -574,11 +536,11 @@ function PLUGIN:PlayerUseItem(player, itemTable, itemEntity)
 	if itemTable.blood then
 		player:SetCharacterData( "blood", math.Clamp(player:GetCharacterData("blood") + itemTable.blood, 0, 100) );
 	end;
-	
+
 	if itemTable.pain then
 		player:SetCharacterData( "pain", math.Clamp(player:GetCharacterData("pain") - itemTable.pain, 0, 100) );
 	end;
-	
+
 	if itemTable.respiration then
 		player:SetCharacterData( "respiration", math.Clamp(player:GetCharacterData("respiration") + itemTable.respiration, 0, 100) );
 	end;
@@ -906,7 +868,7 @@ end;
 function PLUGIN:DoPlayerDeath(player, attacker, damageInfo)
 	player.deathPos = player:GetPos() + Vector(0, 0, 8);
 	player.deathAng = player:GetAngles();
-	
+
 	local ragdoll = player:GetRagdollEntity();
 
 	local pkDeathsOnly = Clockwork.config:Get("med_pk_deaths"):Get();
