@@ -552,8 +552,6 @@ function PLUGIN:PlayerScaleDamageByHitGroup(player, attacker, hitGroup, damageIn
 
 	player:SetLastHitGroup(hitGroup);
 
-	print(damageInfo:GetDamage(), damageInfo:IsDamageType(DMG_BLAST), hitGroup, "CABLOOOEY");
-
 	//print("AH IM BOOOOSTIN22e2114G", damageInfo:GetDamage() >= 5, !player:HasInjury("unconsciousness"), CurTime() + 30 >= player.combatBoost)
 
 	if (damageInfo:GetDamage() >= 3 and !player:HasInjury("unconsciousness") and CurTime() + 30 >= player.combatBoost) then
@@ -566,38 +564,8 @@ function PLUGIN:PlayerScaleDamageByHitGroup(player, attacker, hitGroup, damageIn
 
 	local shouldInjure = Clockwork.plugin:Call("PlayerShouldInjureFromDamage", player, attacker, hitGroup, damageInfo, baseDamage);
 
-	//print("OKAY MK18", shouldInjure, armorStopped)
-
 	if (shouldInjure == false) then
 		armorStopped = true;
-	end;
-
-	if (armorItem and armorItem.GetDurability and armorItem:GetDurability() > 0) then
-		if (damageInfo:IsBulletDamage()) then
-			//print("thas a lot of damage ", damageInfo:GetDamage() < armorItem:GetMaxDamage(), damageInfo:GetDamage(), armorItem:GetMaxDamage())
-			if (armorItem.GetMaxDamage and damageInfo:GetDamage() < armorItem:GetMaxDamage()) then
-				armorItem:DamageDurability(damageInfo);
-				damageInfo:ScaleDamage(armorItem.blunt or 0);
-
-				armorStopped = true;
-
-				local soundNumber = math.random(1, 8);
-				player:EmitSound("player/damage/pl_heavyarmor_damagebullet_0"..soundNumber..".wav", 130, 80, 1, CHAN_BODY);
-
-				if (damageInfo:GetDamage() > 5) then
-					//player:GiveInjury("blunt trauma");
-					local pain = player:GetCharacterData("pain");
-					player:SetCharacterData("pain", pain - 4);
-				end;
-
-				return;
-			else
-				armorItem:DamageDurability(damageInfo);
-
-				local soundNumber = math.random(1, 3);
-				//player:EmitSound("physics/metal/metal_computer_impact_bullet"..soundNumber..".wav", 110, 90, 1, CHAN_BODY);
-			end;
-		end;
 	end;
 
 	if (armorStopped) then
