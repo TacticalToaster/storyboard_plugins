@@ -79,6 +79,8 @@ function PLUGIN:PlayerShouldInjureFromDamage(player, attacker, hitGroup, damageI
 end;
 
 function PLUGIN:PlayerThink(player, curTime, infoTable)
+	// TODO: Moving exposure and playerthink checks for accessories to timers
+
 	if not player.nextExposureTime then player.nextExposureTime = 0 end;
 
 	local clothes = player:GetClothesItem();

@@ -64,6 +64,7 @@ function ITEM:CanPlayerWear(player, itemEntity)
 	if (self.CanEquip and !self:CanEquip(player, itemEntity, accessoryData)) then return false end;
 
 	local hasRequiredItem = false;
+	local hasRequiredOpenedSlot = false;
 	local openSlots = true;
 	for i,v in pairs(player:GetAccessoryData()) do
 		local itemTable = player:FindItemByID(v, i);
@@ -72,12 +73,16 @@ function ITEM:CanPlayerWear(player, itemEntity)
 
 		if (self("incompatibleSlots") and self("incompatibleSlots")[itemTable.equipmentSlot]) then return false end;
 
+		if (self.requiredOpenedSlot and itemTable("openedSlots")[self.requiredOpenedSlot]) then
+			hasRequiredOpenedSlot = true;
+		end;
+
 		if (self.requiredWearItem and self.requiredWearItem == itemTable("uniqueID")) then
 			hasRequiredItem = true;
 		end;
 	end;
 
-	return (!self.requiredWearItem) or (self.requiredWearItem and hasRequiredItem);
+	return ((!self.requiredWearItem) or (self.requiredWearItem and hasRequiredItem)) and ((!self.requiredOpenedSlot) or (self.requiredOpenedSlot and hasRequiredItem));
 
 	/*if (self.requiredWearItem) then
 		local hasWearItem = false;
@@ -232,7 +237,7 @@ if (CLIENT) then
 		if self.ExtraClientSideInfo and self:ExtraClientSideInfo(markupText) then
 			markupText = self:ExtraClientSideInfo(markupText);
 		end;
-		
+
 		/*if (Clockwork.player:IsWearingItem(self)) then
 			markupText = Clockwork.kernel:AddMarkupLine(markupText, "Wearing: Yes");
 		else
