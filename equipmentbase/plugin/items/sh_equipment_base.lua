@@ -82,7 +82,7 @@ function ITEM:CanPlayerWear(player, itemEntity)
 		end;
 	end;
 
-	return ((!self.requiredWearItem) or (self.requiredWearItem and hasRequiredItem)) and ((!self.requiredOpenedSlot) or (self.requiredOpenedSlot and hasRequiredItem));
+	return ((!self.requiredWearItem or hasRequiredItem)) and (!self.requiredOpenedSlot or hasRequiredOpenedSlot));
 
 	/*if (self.requiredWearItem) then
 		local hasWearItem = false;
